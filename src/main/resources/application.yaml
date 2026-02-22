@@ -4,7 +4,7 @@ spring:
     name: SmartAurportRidePooling
 
   datasource:
-    url: jdbc:postgresql://postgres:5432/airport_pooling?options=-c%20TimeZone=UTC
+    url: jdbc:postgresql://localhost:5432/airport_pooling
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -29,3 +29,15 @@ spring:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
+
+  management:
+    endpoints:
+      web:
+        exposure:
+          include: health,info,metrics,prometheus
+    endpoint:
+      health:
+        show-details: always
+    metrics:
+      tags:
+        application: smart-airport-ride-pooling
