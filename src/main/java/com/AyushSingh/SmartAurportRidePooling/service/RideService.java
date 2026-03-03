@@ -7,6 +7,8 @@ import com.AyushSingh.SmartAurportRidePooling.matching.MatchingEngine;
 import com.AyushSingh.SmartAurportRidePooling.pricing.PricingStrategy;
 import com.AyushSingh.SmartAurportRidePooling.concurrency.RedisDistributedLock;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -30,6 +32,7 @@ public class RideService {
     private final ThreadPoolTaskExecutor matchingExecutor;
 
     @Transactional
+    @CacheEvict(value = "availableCabs", allEntries = true)
     public RideResponseDTO requestRide(RideRequestDTO dto) {
         Passenger passenger = passengerRepo.findById(dto.getPassengerId()).orElseThrow();
         RideRequest req = RideRequest.builder()
@@ -101,6 +104,7 @@ public class RideService {
     }
 
     @Transactional
+    @CacheEvict(value = "rides", key = "#id")
     public void cancelRide(Long rideId) {
         Ride ride = rideRepo.findById(rideId).orElseThrow();
         ride.setStatus("CANCELLED");
@@ -114,6 +118,7 @@ public class RideService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "rides", key = "#id")
     public RideResponseDTO getRide(Long rideId) {
         Ride ride = rideRepo.findById(rideId).orElseThrow();
         RideResponseDTO resp = new RideResponseDTO();

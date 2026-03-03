@@ -4,6 +4,7 @@ import com.AyushSingh.SmartAurportRidePooling.dto.PassengerDTO;
 import com.AyushSingh.SmartAurportRidePooling.entity.Passenger;
 import com.AyushSingh.SmartAurportRidePooling.repository.PassengerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ public class PassengerService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "passengers", key = "#id")
     public PassengerDTO getPassenger(Long id) {
         Passenger passenger = passengerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Passenger not found"));
